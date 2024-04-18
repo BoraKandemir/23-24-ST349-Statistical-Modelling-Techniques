@@ -20,7 +20,7 @@ library(dplyr)
 
 ## Lets take a look at the structure of our data
 ```{r}
-df <- read.csv("C:/Users/dell/Desktop/SMT_HW_6/Orange_Quality_Data.csv", dec=",")# read in our data
+df <- read.csv("C:/Users/dell/Desktop/SMT_HW_6/iris.csv", dec=",")# read in our data
 
 str(df)  # Understanding the structure of complex objects
 
@@ -47,15 +47,15 @@ summary(df)
 Converting the variables we are interested in in our data set into numeric data type and assigning them with new names.
 ```{r}
 
-df$softness <- as.numeric(df$Softness..1.5.)
-df$size <- as.numeric(df$Size..cm.)
-df$weight <- as.numeric(df$Weight..g.)
+df$softness <- as.numeric(df$petal.length..1.5.)
+df$size <- as.numeric(df$sepal.length..cm.)
+df$weight <- as.numeric(df$sepal.width..g.)
 summary(df)
 ```
  
 ```{r}
  
-model <- lm(softness ~ (size / weight), data = df)
+model <- lm(softness ~ (petal.length / sepal.length), data = df)
 
 summary(model)
 
@@ -71,13 +71,13 @@ The R-squared value, or coefficient of determination, indicates the proportion o
 #ANOVA
 ANOVA is a statistical method used to analyze differences among group means in a sample, assessing if the means of different groups are significantly different from each other. It is commonly used when comparing three or more groups to determine if there is a statistically significant difference.
 ```{r}
- boxplot(softness ~ (size / weight), data = df, col = "lightblue", main = "Boxplot of Group Values")
+ boxplot(softness ~ (petal.length / sepal.length), data = df, col = "lightblue", main = "Boxplot of Group Values")
 
 ```
  
 
 ```{r}
- anova_result <- aov(softness ~ (size / weight), data = df)
+ anova_result <- aov(softness ~ (petal.length / sepal.length), data = df)
 
 # Summary of ANOVA results
 summary(anova_result)
@@ -87,7 +87,7 @@ The F-statistic measures the difference between group means, while the p-value i
 
 ```{r}
 
-df$covariate = cov(df$weight , df$size)
+df$covariate = cov(df$petal.length , df$sepal.length)
 summary(df$covariate)
 
 # Visualize the data using scatterplot
