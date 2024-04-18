@@ -1,0 +1,104 @@
+title: "Homework6"
+author: "Bora Kandemir"
+date: "2024-04-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+ 
+# Downloading and installing packages
+```{r}
+#install.packages("data.sets")
+#install.packages("dplyr")
+library("data.sets")
+# Data splitting
+library(dplyr)
+```
+
+## Lets take a look at the structure of our data
+```{r}
+df <- read.csv("C:/Users/dell/Desktop/SMT_HW_6/Orange_Quality_Data.csv", dec=",")# read in our data
+
+str(df)  # Understanding the structure of complex objects
+
+head(df) # View Top 5
+
+tail(df) # View Last 5
+```
+
+```{r}
+# Check for any null values
+colSums(is.na(df))
+
+```
+### Some Basic Statistics
+Using **summary()** we can get some basic statistical values:
+- Mean
+- Median
+- Max
+- Quartiles
+
+```{r}
+summary(df)
+```
+Converting the variables we are interested in in our data set into numeric data type and assigning them with new names.
+```{r}
+
+df$softness <- as.numeric(df$Softness..1.5.)
+df$size <- as.numeric(df$Size..cm.)
+df$weight <- as.numeric(df$Weight..g.)
+summary(df)
+```
+ 
+```{r}
+ 
+model <- lm(softness ~ (size / weight), data = df)
+
+summary(model)
+
+```
+ 
+ The coefficients table in a regression model provides estimates for the intercept and slope of the regression line, with the intercept being close to 1.5 and the slope being close to 0. Residuals represent the differences between observed and predicted values of the dependent variable, with statistics about the mean, median, and quartiles. The residual standard error measures the typical size of errors in the regression model.
+
+The "Pr(>|t|)" column in the coefficients table provides p-values for each coefficient, indicating their significance in the model. Smaller p-values usually indicate that the corresponding coefficient is significantly different from zero and contributes significantly to the model.
+
+The R-squared value, or coefficient of determination, indicates the proportion of variance in the dependent variable explained by the independent variable(s). In this example, the R-squared value is close to 0.1, indicating that a large proportion of the variance in y is explained by x. The adjusted R-squared value adjusts for the number of predictors in the model, penalizing the inclusion of additional predictors that do not significantly improve the model fit.
+
+
+#ANOVA
+ANOVA is a statistical method used to analyze differences among group means in a sample, assessing if the means of different groups are significantly different from each other. It is commonly used when comparing three or more groups to determine if there is a statistically significant difference.
+```{r}
+ boxplot(softness ~ (size / weight), data = df, col = "lightblue", main = "Boxplot of Group Values")
+
+```
+ 
+
+```{r}
+ anova_result <- aov(softness ~ (size / weight), data = df)
+
+# Summary of ANOVA results
+summary(anova_result)
+```
+The F-statistic measures the difference between group means, while the p-value is the probability of observing the data if the null hypothesis is true. It measures the difference between groups, while the SS measures the variability within each group. A small p-value indicates strong evidence against the null hypothesis, suggesting that at least one group mean is significantly different from the others.
+ 
+
+```{r}
+
+df$covariate = cov(df$weight , df$size)
+summary(df$covariate)
+
+# Visualize the data using scatterplot
+plot(df$covariate, df$softness, col = as.integer(df$Group), pch = 19,
+     xlab = "Covariate", ylab = "Softness", main = "Scatterplot with Covariate")
+
+# Perform ANCOVA
+ancova_result <- lm(softness ~ (size/weight) + covariate, data = df)
+
+# Summary of ANCOVA results
+summary(ancova_result)
+```
+
+ANCOVA is an extension of the Analysis of Variance (ANOVA) method that incorporates continuous covariates into the analysis. It assesses differences in group means after adjusting for covariate effects. The dependent variable remains categorical, while the independent variable remains categorical. The covariate is included as a predictor, allowing for better control of covariate effects and improving comparison accuracy between group means.
